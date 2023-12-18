@@ -2394,7 +2394,7 @@ class Trainer:
             with self.args.main_process_first(
                 desc="Renaming model checkpoint folder to true location", local=self.args.save_on_each_node
             ):
-				try:
+                try:
                     if os.path.exists(staging_output_dir):
                         os.rename(staging_output_dir, output_dir)
                 except Exception as e:
