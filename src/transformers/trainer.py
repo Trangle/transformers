@@ -2537,10 +2537,6 @@ class Trainer:
                 try:
                     if os.path.exists(staging_output_dir):
                         os.rename(staging_output_dir, output_dir)
-                except Exception as e:
-                    logger.warning(
-                            f"With distributed training, local {self.args.save_on_each_node}, Unable to rename {staging_output_dir} to {output_dir}: {e}"
-                    )
 
                     # Ensure rename completed in cases where os.rename is not atomic
                     # And can only happen on non-windows based systems
@@ -2548,6 +2544,11 @@ class Trainer:
                         fd = os.open(output_dir, os.O_RDONLY)
                         os.fsync(fd)
                         os.close(fd)
+                except Exception as e:
+                    logger.warning(
+                            f"With distributed training, local {self.args.save_on_each_node}, Unable to rename {staging_output_dir} to {output_dir}: {e}"
+                    )
+
 
             # Maybe delete some older checkpoints.
             if self.args.should_save:
@@ -2557,7 +2558,14 @@ class Trainer:
         elif self.is_local_process_zero():
             # Clean up the remaining staging checkpoint folders on other nodes
             if staging_output_dir != output_dir and os.path.exists(staging_output_dir):
-                shutil.rmtree(staging_output_dir)
+                try:
+                    shutil.rmtree(staging_output_dir, ignore_errors=True)
+                    # shutil.rmtree(staging_output_dir)
+                except Exception as e:
+                    logger.warning(
+                            f"With distributed training, local {self.is_local_process_zero()}, Unable to remove {staging_output_dir}: {e}"
+                    )
+                    
 
         self.args.distributed_state.wait_for_everyone()
 
