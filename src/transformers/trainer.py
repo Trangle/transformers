@@ -2398,6 +2398,14 @@ class Trainer:
 
             logs["loss"] = round(tr_loss_scalar / (self.state.global_step - self._globalstep_last_logged), 4)
             if grad_norm is not None:
+				if isinstance(grad_norm, torch.Tensor):
+                    grad_norm = grad_norm.item()
+                if not isinstance(grad_norm, float):
+                    try:
+                        grad_norm = float(grad_norm)
+                    except Exception as e:
+                        logger.warning(f"Unexpected grad_norm type {type(grad_norm)}")
+                        grad_norm = -1.
                 logs["grad_norm"] = grad_norm
             logs["learning_rate"] = self._get_learning_rate()
 
