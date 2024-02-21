@@ -2398,7 +2398,7 @@ class Trainer:
 
             logs["loss"] = round(tr_loss_scalar / (self.state.global_step - self._globalstep_last_logged), 4)
             if grad_norm is not None:
-				if isinstance(grad_norm, torch.Tensor):
+                if isinstance(grad_norm, torch.Tensor):
                     grad_norm = grad_norm.item()
                 if not isinstance(grad_norm, float):
                     try:
