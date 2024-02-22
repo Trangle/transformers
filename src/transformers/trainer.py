@@ -2542,9 +2542,8 @@ class Trainer:
         # Then go through the rewriting process, only renaming and rotating from main process(es)
         if self.is_local_process_zero() if self.args.save_on_each_node else self.is_world_process_zero():
             if staging_output_dir != output_dir:
-                try:
-                    if os.path.exists(staging_output_dir):
-                        os.rename(staging_output_dir, output_dir)
+                if os.path.exists(staging_output_dir):
+                    os.rename(staging_output_dir, output_dir)
 
                     # Ensure rename completed in cases where os.rename is not atomic
                     # And can only happen on non-windows based systems
@@ -2552,18 +2551,13 @@ class Trainer:
                         fd = os.open(output_dir, os.O_RDONLY)
                         os.fsync(fd)
                         os.close(fd)
-                except Exception as e:
-                    logger.warning(
-                            f"With distributed training, local {self.args.save_on_each_node}, Unable to rename {staging_output_dir} to {output_dir}: {e}"
-                    )
-
 
             # Maybe delete some older checkpoints.
             if self.args.should_save:
                 # Solely rely on numerical checkpoint id for rotation.
                 # mtime is not reliable especially on some fuse fs in cloud environments.
                 self._rotate_checkpoints(use_mtime=False, output_dir=run_dir)
-        elif self.is_local_process_zero():
+        elif self.is_local_process_zero() if self.args.save_on_each_node else self.is_world_process_zero():
             # Clean up the remaining staging checkpoint folders on other nodes
             if staging_output_dir != output_dir and os.path.exists(staging_output_dir):
                 try:
@@ -2571,7 +2565,7 @@ class Trainer:
                     shutil.rmtree(staging_output_dir)
                 except Exception as e:
                     logger.warning(
-                            f"With distributed training, local {self.is_local_process_zero()}, Unable to remove {staging_output_dir}: {e}"
+                        f"With distributed training, local {self.is_local_process_zero()}, Unable to remove {staging_output_dir}: {e}"
                     )
                     
 
