@@ -2567,8 +2567,8 @@ class Trainer:
             # Clean up the remaining staging checkpoint folders on other nodes
             if staging_output_dir != output_dir and os.path.exists(staging_output_dir):
                 try:
-                    shutil.rmtree(staging_output_dir, ignore_errors=True)
-                    # shutil.rmtree(staging_output_dir)
+                    # shutil.rmtree(staging_output_dir, ignore_errors=True)
+                    shutil.rmtree(staging_output_dir)
                 except Exception as e:
                     logger.warning(
                             f"With distributed training, local {self.is_local_process_zero()}, Unable to remove {staging_output_dir}: {e}"
