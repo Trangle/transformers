@@ -2545,8 +2545,12 @@ class Trainer:
         if self.is_local_process_zero() if self.args.save_on_each_node else self.is_world_process_zero():
             if staging_output_dir != output_dir:
                 if os.path.exists(staging_output_dir):
-                    os.rename(staging_output_dir, output_dir)
-
+                    try:
+                        os.rename(staging_output_dir, output_dir)
+                    except Exception as e:
+                        logger.warning(
+                            f"With distributed training, local rank {self.is_local_process_zero()}, Unable to rename {staging_output_dir}: {e}"
+                        )
                     # Ensure rename completed in cases where os.rename is not atomic
                     # And can only happen on non-windows based systems
                     if os.name != "nt":
@@ -2561,13 +2565,13 @@ class Trainer:
                 self._rotate_checkpoints(use_mtime=False, output_dir=run_dir)
         elif self.is_local_process_zero() if self.args.save_on_each_node else self.is_world_process_zero():
             # Clean up the remaining staging checkpoint folders on other nodes
-            if staging_output_dir != output_dir and os.path.exists(staging_output_dir):
+            if staging_output_dir != output_dir and os.path.exists(staging_output_dir) and staging_output_dir.startswith("tmp-"):
                 try:
                     # shutil.rmtree(staging_output_dir, ignore_errors=True)
                     shutil.rmtree(staging_output_dir)
                 except Exception as e:
                     logger.warning(
-                        f"With distributed training, local {self.is_local_process_zero()}, Unable to remove {staging_output_dir}: {e}"
+                        f"With distributed training, local rank {self.is_local_process_zero()}, Unable to remove {staging_output_dir}: {e}"
                     )
                     
 
