@@ -2543,26 +2543,27 @@ class Trainer:
 
         # Then go through the rewriting process, only renaming and rotating from main process(es)
         if self.is_local_process_zero() if self.args.save_on_each_node else self.is_world_process_zero():
-            if staging_output_dir != output_dir:
-                if os.path.exists(staging_output_dir):
-                    try:
+            try:
+                if staging_output_dir != output_dir:
+                    if os.path.exists(staging_output_dir):
                         os.rename(staging_output_dir, output_dir)
-                    except Exception as e:
-                        logger.warning(
-                            f"With distributed training, local rank {self.is_local_process_zero()}, Unable to rename {staging_output_dir}: {e}"
-                        )
-                    # Ensure rename completed in cases where os.rename is not atomic
-                    # And can only happen on non-windows based systems
-                    if os.name != "nt":
-                        fd = os.open(output_dir, os.O_RDONLY)
-                        os.fsync(fd)
-                        os.close(fd)
+                        
+                        # Ensure rename completed in cases where os.rename is not atomic
+                        # And can only happen on non-windows based systems
+                        if os.name != "nt":
+                            fd = os.open(output_dir, os.O_RDONLY)
+                            os.fsync(fd)
+                            os.close(fd)
 
-            # Maybe delete some older checkpoints.
-            if self.args.should_save:
-                # Solely rely on numerical checkpoint id for rotation.
-                # mtime is not reliable especially on some fuse fs in cloud environments.
-                self._rotate_checkpoints(use_mtime=False, output_dir=run_dir)
+                # Maybe delete some older checkpoints.
+                if self.args.should_save:
+                    # Solely rely on numerical checkpoint id for rotation.
+                    # mtime is not reliable especially on some fuse fs in cloud environments.
+                    self._rotate_checkpoints(use_mtime=False, output_dir=run_dir)
+            except Exception as e:
+                logger.warning(
+                    f"With distributed training, world rank {self.is_world_process_zero()}, Unable to rename {staging_output_dir}: {e}"
+                )
         elif self.is_local_process_zero() if self.args.save_on_each_node else self.is_world_process_zero():
             # Clean up the remaining staging checkpoint folders on other nodes
             if staging_output_dir != output_dir and os.path.exists(staging_output_dir) and staging_output_dir.startswith("tmp-"):
@@ -2571,7 +2572,7 @@ class Trainer:
                     shutil.rmtree(staging_output_dir)
                 except Exception as e:
                     logger.warning(
-                        f"With distributed training, local rank {self.is_local_process_zero()}, Unable to remove {staging_output_dir}: {e}"
+                        f"With distributed training, world rank {self.is_world_process_zero()}, Unable to remove {staging_output_dir}: {e}"
                     )
                     
 
