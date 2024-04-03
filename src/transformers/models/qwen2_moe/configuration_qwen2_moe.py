@@ -83,7 +83,7 @@ class Qwen2MoeConfig(PretrainedConfig):
         moe_intermediate_size (`int`, *optional*, defaults to 1408):
             Intermediate size of the routed expert.
         shared_expert_intermediate_size (`int`, *optional*, defaults to 5632):
-            Intermediate size of the shared expert.
+            Intermediate size of the shared expert. 4 times of moe_intermediate_size, so it equals 4 experts.
         num_experts_per_tok (`int`, *optional*, defaults to 4):
             Number of selected experts.
         num_experts (`int`, *optional*, defaults to 60):
