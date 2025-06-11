@@ -14,7 +14,8 @@
 # limitations under the License.
 """Image processor class for Vilt."""
 
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from collections.abc import Iterable
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -35,6 +36,7 @@ from ...image_utils import (
     validate_preprocess_arguments,
 )
 from ...utils import TensorType, filter_out_non_signature_kwargs, is_vision_available, logging
+from ...utils.import_utils import requires
 
 
 if is_vision_available():
@@ -118,6 +120,7 @@ def get_resize_output_image_size(
     return new_height, new_width
 
 
+@requires(backends=("vision",))
 class ViltImageProcessor(BaseImageProcessor):
     r"""
     Constructs a ViLT image processor.
@@ -163,7 +166,7 @@ class ViltImageProcessor(BaseImageProcessor):
     def __init__(
         self,
         do_resize: bool = True,
-        size: Dict[str, int] = None,
+        size: Optional[Dict[str, int]] = None,
         size_divisor: int = 32,
         resample: PILImageResampling = PILImageResampling.BICUBIC,
         do_rescale: bool = True,
@@ -438,7 +441,7 @@ class ViltImageProcessor(BaseImageProcessor):
         # All transformations expect numpy arrays.
         images = [to_numpy_array(image) for image in images]
 
-        if is_scaled_image(images[0]) and do_rescale:
+        if do_rescale and is_scaled_image(images[0]):
             logger.warning_once(
                 "It looks like you are trying to rescale already rescaled images. If the input"
                 " images have pixel values between 0 and 1, set `do_rescale=False` to avoid rescaling them again."
@@ -484,3 +487,6 @@ class ViltImageProcessor(BaseImageProcessor):
             encoded_outputs = BatchFeature(data={"pixel_values": images}, tensor_type=return_tensors)
 
         return encoded_outputs
+
+
+__all__ = ["ViltImageProcessor"]

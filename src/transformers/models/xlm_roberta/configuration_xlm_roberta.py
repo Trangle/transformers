@@ -16,7 +16,7 @@
 """XLM-RoBERTa configuration"""
 
 from collections import OrderedDict
-from typing import Mapping
+from collections.abc import Mapping
 
 from ...configuration_utils import PretrainedConfig
 from ...onnx import OnnxConfig
@@ -152,3 +152,6 @@ class XLMRobertaOnnxConfig(OnnxConfig):
                 ("attention_mask", dynamic_axis),
             ]
         )
+
+
+__all__ = ["XLMRobertaConfig", "XLMRobertaOnnxConfig"]

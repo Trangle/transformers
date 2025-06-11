@@ -18,10 +18,11 @@ Speech processor class for Wav2Vec2
 
 import os
 import warnings
+from collections.abc import Iterable
 from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass
 from multiprocessing import Pool, get_context, get_start_method
-from typing import TYPE_CHECKING, Dict, Iterable, List, Optional, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 import numpy as np
 
@@ -653,3 +654,6 @@ class Wav2Vec2ProcessorWithLM(ProcessorMixin):
         yield
         self.current_processor = self.feature_extractor
         self._in_target_context_manager = False
+
+
+__all__ = ["Wav2Vec2ProcessorWithLM"]

@@ -17,7 +17,8 @@
 """Pvt model configuration"""
 
 from collections import OrderedDict
-from typing import Callable, List, Mapping
+from collections.abc import Mapping
+from typing import Callable, List
 
 from packaging import version
 
@@ -157,3 +158,6 @@ class PvtOnnxConfig(OnnxConfig):
     @property
     def default_onnx_opset(self) -> int:
         return 12
+
+
+__all__ = ["PvtConfig", "PvtOnnxConfig"]

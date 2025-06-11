@@ -15,7 +15,7 @@
 """PLBART model configuration"""
 
 from collections import OrderedDict
-from typing import Mapping
+from collections.abc import Mapping
 
 from ...configuration_utils import PretrainedConfig
 from ...onnx import OnnxConfigWithPast
@@ -188,3 +188,6 @@ class PLBartOnnxConfig(OnnxConfigWithPast):
                     ("encoder_last_hidden_state", {0: "batch", 1: "sequence"}),
                 ]
             )
+
+
+__all__ = ["PLBartConfig"]

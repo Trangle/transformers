@@ -16,7 +16,7 @@
 """BERT model configuration"""
 
 from collections import OrderedDict
-from typing import Mapping
+from collections.abc import Mapping
 
 from ...configuration_utils import PretrainedConfig
 from ...onnx import OnnxConfig
@@ -149,3 +149,6 @@ class BertOnnxConfig(OnnxConfig):
                 ("token_type_ids", dynamic_axis),
             ]
         )
+
+
+__all__ = ["BertConfig", "BertOnnxConfig"]

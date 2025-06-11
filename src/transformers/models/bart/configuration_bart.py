@@ -16,7 +16,8 @@
 
 import warnings
 from collections import OrderedDict
-from typing import Any, Mapping, Optional
+from collections.abc import Mapping
+from typing import Any, Optional
 
 from ... import PreTrainedTokenizer
 from ...configuration_utils import PretrainedConfig
@@ -400,3 +401,6 @@ class BartOnnxConfig(OnnxSeq2SeqConfigWithPast):
             flattened_output = super(OnnxSeq2SeqConfigWithPast, self)._flatten_past_key_values_(
                 flattened_output, name, idx, t
             )
+
+
+__all__ = ["BartConfig", "BartOnnxConfig"]

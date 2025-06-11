@@ -15,7 +15,7 @@
 """Table Transformer model configuration"""
 
 from collections import OrderedDict
-from typing import Mapping
+from collections.abc import Mapping
 
 from packaging import version
 
@@ -274,3 +274,6 @@ class TableTransformerOnnxConfig(OnnxConfig):
     @property
     def default_onnx_opset(self) -> int:
         return 12
+
+
+__all__ = ["TableTransformerConfig", "TableTransformerOnnxConfig"]

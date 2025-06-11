@@ -15,7 +15,8 @@
 """M2M100 model configuration"""
 
 from collections import OrderedDict
-from typing import Any, Mapping, Optional
+from collections.abc import Mapping
+from typing import Any, Optional
 
 from ... import PreTrainedTokenizer
 from ...configuration_utils import PretrainedConfig
@@ -278,3 +279,6 @@ class M2M100OnnxConfig(OnnxSeq2SeqConfigWithPast):
         return common_inputs
 
     generate_dummy_inputs = _generate_dummy_inputs_for_default_and_seq2seq_lm
+
+
+__all__ = ["M2M100Config", "M2M100OnnxConfig"]

@@ -15,7 +15,7 @@
 """Data2VecText configuration"""
 
 from collections import OrderedDict
-from typing import Mapping
+from collections.abc import Mapping
 
 from ...configuration_utils import PretrainedConfig
 from ...onnx import OnnxConfig
@@ -149,3 +149,6 @@ class Data2VecTextOnnxConfig(OnnxConfig):
                 ("attention_mask", dynamic_axis),
             ]
         )
+
+
+__all__ = ["Data2VecTextConfig", "Data2VecTextOnnxConfig"]

@@ -15,7 +15,8 @@
 """Perceiver model configuration"""
 
 from collections import OrderedDict
-from typing import Any, Mapping, Optional, Union
+from collections.abc import Mapping
+from typing import Any, Optional, Union
 
 from ...configuration_utils import PretrainedConfig
 from ...feature_extraction_utils import FeatureExtractionMixin
@@ -239,3 +240,6 @@ class PerceiverOnnxConfig(OnnxConfig):
             raise ValueError(
                 "Unable to generate dummy inputs for the model. Please provide a tokenizer or a preprocessor."
             )
+
+
+__all__ = ["PerceiverConfig", "PerceiverOnnxConfig"]

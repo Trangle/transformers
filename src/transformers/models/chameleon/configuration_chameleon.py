@@ -14,7 +14,7 @@
 # limitations under the License.
 """chameleon model configuration"""
 
-from typing import List
+from typing import List, Optional
 
 from ...configuration_utils import PretrainedConfig
 from ...utils import logging
@@ -62,6 +62,7 @@ class ChameleonVQVAEConfig(PretrainedConfig):
     """
 
     model_type = "chameleon_vqgan"
+    base_config_key = "vq_config"
 
     def __init__(
         self,
@@ -74,7 +75,7 @@ class ChameleonVQVAEConfig(PretrainedConfig):
         base_channels: int = 128,
         channel_multiplier: List[int] = [1, 1, 2, 2, 4],
         num_res_blocks: int = 2,
-        attn_resolutions: List[int] = None,
+        attn_resolutions: Optional[List[int]] = None,
         dropout: float = 0.0,
         attn_type: str = "vanilla",
         initializer_range=0.02,
@@ -124,7 +125,7 @@ class ChameleonConfig(PretrainedConfig):
             `num_key_value_heads=num_attention_heads`, the model will use Multi Head Attention (MHA), if
             `num_key_value_heads=1 the model will use Multi Query Attention (MQA) otherwise GQA is used. When
             converting a multi-head checkpoint to a GQA checkpoint, each group key and value head should be constructed
-            by meanpooling all the original heads within that group. For more details checkout [this
+            by meanpooling all the original heads within that group. For more details, check out [this
             paper](https://arxiv.org/pdf/2305.13245.pdf). If it is not specified, will default to
             `num_attention_heads`.
         hidden_act (`str` or `function`, *optional*, defaults to `"silu"`):
@@ -187,6 +188,7 @@ class ChameleonConfig(PretrainedConfig):
     ```"""
 
     model_type = "chameleon"
+    sub_configs = {"vq_config": ChameleonVQVAEConfig}
     keys_to_ignore_at_inference = ["past_key_values"]
 
     def __init__(
@@ -245,6 +247,7 @@ class ChameleonConfig(PretrainedConfig):
         self.vq_config = ChameleonVQVAEConfig(**vq_config)
 
         self.vocabulary_map = vocabulary_map
+        self.image_token_id = vocabulary_map.get("<image>") if vocabulary_map is not None else None
 
         super().__init__(
             pad_token_id=pad_token_id,
@@ -274,3 +277,6 @@ class ChameleonConfig(PretrainedConfig):
             )
         if rope_scaling_factor is None or not isinstance(rope_scaling_factor, float) or rope_scaling_factor <= 1.0:
             raise ValueError(f"`rope_scaling`'s factor field must be a float > 1, got {rope_scaling_factor}")
+
+
+__all__ = ["ChameleonConfig", "ChameleonVQVAEConfig"]

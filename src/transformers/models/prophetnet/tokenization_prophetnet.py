@@ -16,7 +16,8 @@
 import collections
 import os
 import unicodedata
-from typing import Iterable, List, Optional, Tuple
+from collections.abc import Iterable
+from typing import List, Optional, Tuple
 
 from ...tokenization_utils import PreTrainedTokenizer, _is_control, _is_punctuation, _is_whitespace
 from ...utils import logging
@@ -213,7 +214,7 @@ class WordpieceTokenizer:
         Tokenizes a piece of text into its word pieces. This uses a greedy longest-match-first algorithm to perform
         tokenization using the given vocabulary.
 
-        For example, `input = "unaffable"` wil return as output `["un", "##aff", "##able"]`.
+        For example, `input = "unaffable"` will return as output `["un", "##aff", "##able"]`.
 
         Args:
             text: A single token or whitespace separated tokens. This should have
@@ -308,6 +309,9 @@ class ProphetNetTokenizer(PreTrainedTokenizer):
         strip_accents (`bool`, *optional*):
             Whether or not to strip all accents. If this option is not specified, then it will be determined by the
             value for `lowercase` (as in the original BERT).
+        clean_up_tokenization_spaces (`bool`, *optional*, defaults to `True`):
+            Whether or not to cleanup spaces after decoding, cleanup consists in removing potential artifacts like
+            extra spaces.
     """
 
     vocab_files_names = VOCAB_FILES_NAMES
@@ -330,6 +334,7 @@ class ProphetNetTokenizer(PreTrainedTokenizer):
         mask_token: Optional[str] = "[MASK]",
         tokenize_chinese_chars: Optional[bool] = True,
         strip_accents: Optional[bool] = None,
+        clean_up_tokenization_spaces: bool = True,
         **kwargs,
     ):
         if not os.path.isfile(vocab_file):
@@ -360,6 +365,7 @@ class ProphetNetTokenizer(PreTrainedTokenizer):
             mask_token=mask_token,
             tokenize_chinese_chars=tokenize_chinese_chars,
             strip_accents=strip_accents,
+            clean_up_tokenization_spaces=clean_up_tokenization_spaces,
             **kwargs,
         )
 
@@ -497,3 +503,6 @@ class ProphetNetTokenizer(PreTrainedTokenizer):
             return token_ids_0 + [self.sep_token_id]
         sep = [self.sep_token_id]
         return token_ids_0 + sep + token_ids_1 + sep
+
+
+__all__ = ["ProphetNetTokenizer"]

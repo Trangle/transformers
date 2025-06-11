@@ -15,7 +15,8 @@
 """Marian model configuration"""
 
 from collections import OrderedDict
-from typing import Any, Mapping, Optional
+from collections.abc import Mapping
+from typing import Any, Optional
 
 from ... import PreTrainedTokenizer
 from ...configuration_utils import PretrainedConfig
@@ -389,3 +390,6 @@ class MarianOnnxConfig(OnnxSeq2SeqConfigWithPast):
     @property
     def atol_for_validation(self) -> float:
         return 1e-4
+
+
+__all__ = ["MarianConfig", "MarianOnnxConfig"]
